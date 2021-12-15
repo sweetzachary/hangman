@@ -6,7 +6,7 @@ class Game
   def initialize
     @secret_word = SecretWord.new
     @error_counter = ErrorCounter.new
-    @guessed_word = GuessedWord.new
+    @guessed_word = GuessedWord.new(@secret_word.length)
   end
 
   def run

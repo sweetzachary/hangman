@@ -7,6 +7,10 @@ class SecretWord
     @secret_word.each_char.map { |c| c == guess }
   end
 
+  def length
+    @secret_word.length
+  end
+
   def reveal
     puts "The secret word is #{@secret_word}"
     initialize
@@ -19,6 +23,6 @@ class SecretWord
     words = dict.readlines
     word = ''
     word = words.sample until word.length.between?(min_len, max_len)
-    word.upcase
+    word.upcase.chomp.chomp
   end
 end
