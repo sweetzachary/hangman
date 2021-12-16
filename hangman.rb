@@ -1,55 +1,49 @@
-require './secret_word'
-require './error_counter'
-require './guessed_word'
+require './game'
 
-class Game
+class Hangman
   def initialize
-    @secret_word = SecretWord.new
-    @error_counter = ErrorCounter.new
-    @guessed_word = GuessedWord.new(@secret_word.length)
+    @SAVEFILENAME = 'save'
   end
 
   def run
+    puts 'Welcome to the game of Hangman.'
+    options = %w[1 2]
+    choice = ''
     loop do
-      read_guess
-      assess_guess
-      display_status
+      puts '1) New Game'
+      puts '2) Load Game'
+      choice = gets.chomp
 
-      break if finished?
+      break if options.include? choice
+    end
+
+    case choice
+    when '1'
+      play_new_game
+    when '2'
+      load_game
     end
   end
 
   private
 
-  def read_guess
-    puts 'Guess a letter'
-    @guess = gets.chr.upcase
+  def play_new_game
+    game = Game.new(@SAVEFILENAME)
+    game.run
   end
 
-  def assess_guess
-    assessment = @secret_word.assess(@guess)
-    @guessed_word.improve @guess, assessment
-    @error_counter.increase assessment
-  end
-
-  def display_status
-    @error_counter.display
-    @guessed_word.display
-  end
-
-  def finished?
-    if @guessed_word.correct?
-      puts 'You won!'
-      true
-    elsif @error_counter.defeat?
-      puts 'You were hanged...'
-      @secret_word.reveal
-      true
+  def load_game
+    if File.exists? @SAVEFILENAME
+      save = File.open @SAVEFILENAME
+      game_str = save.gets.chomp
+      game =  Marshal.load(game_str)
+      save.close
+      game.run
     else
-      false
+      puts 'ERROR: no save file found.'
     end
   end
 end
 
-game = Game.new
-game.run
+hangman = Hangman.new
+hangman.run
